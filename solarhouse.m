@@ -31,7 +31,7 @@ clc, clear; % clean slate
 
 
 % Plot temperature over time with optimized values
-[t, dT, M] = housetemps(0.5, 1, 6, 2, 3, 2, 40);
+[t, dT, M] = housetemps(0.5, .2, 6, 2, 3, 2, 40);
 fig1 = figure(1);
 hold on;
 grid on;
@@ -74,7 +74,7 @@ function [t, dT, M] = housetemps(absorber_thickness, insulation_thickness, ...
 
 % standard values
 % absorber_thickness = .5; % m
-% insulation_thickness = 1; % m
+% insulation_thickness = .2; % m
 % h_length = 6; % m
 % h_width = 2; % m
 % h_height = 3; % m
@@ -141,6 +141,6 @@ f = @(t,T) [(1/C_abs)*(g_area*(-361*cos(pi*t/43200) + 224*cos(pi*t/21600) + 210)
 
 [t,dT] = ode45(f, tspan, [0 0]); % compute the ode
 
-M = movmean(dT,3600*[2 0]); % 2 hour moving average
+M = movmean(dT,3600*[4 0]); % 4 hour moving average
 
 end
