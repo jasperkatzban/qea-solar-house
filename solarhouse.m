@@ -27,22 +27,62 @@
 % air temperature (analogous to the cutoff frequency of an electronic
 % filter, which affects voltage over time). 
 
-clc, clear all; % clean slate
-
-% define params to vary or sweep
-absorber_thickness = .5; % m
-insulation_thickness = 1; % m
+clc, clear; % clean slate
 
 
-num_days = 40
+% Plot temperature over time with optimized values
+[t, dT, M] = housetemps(0.5, 1, 6, 2, 3, 2, 40);
+fig1 = figure(1);
+hold on;
+grid on;
+plot(t,dT,'-')
+
+plot(t,M, '-')
+h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T_{floor}}$", "$\overline{T_{air}}$");
+set(h,'interpreter','Latex','FontSize',12)
+title("Temperatures in House & 4 hr Moving Average");
+xlabel("Time (seconds)");
+ylabel("Temperature (Celsius)");
+hold off
+
+% Plot temperature over time with optimized values over a single day
+fig2 = figure(2);
+hold on;
+grid on;
+plot(t,dT,'-')
+plot(t,M, '.')
+h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T_{floor}}$", "$\overline{T_{air}}$");
+set(h,'interpreter','Latex','FontSize',12);
+title("Temperatures in House & 4 hr Moving Average, Single Day");
+xlabel("Time (seconds)");
+ylabel("Temperature (Celsius)");
+x_start = 993000;
+axis([x_start x_start+86400 0 40])
+hold off;
+
+% % make fancy 3d plot
+% figure(3);
+% hold on;
+% absorb_thick_range = linspace(0.1, 1, 100); % thickness of thermal mass/absorber
+% insul_thick_range = linspace(0.2, 1.5, 100); % thickness of wall insulation
+% z = absorb_thick_range * insul_thick_range;
+% contour(z);
+
+function [t, dT, M] = housetemps(absorber_thickness, insulation_thickness, ...
+                              h_length, h_width, h_height, g_height, ...
+                              num_days)
+
+% standard values
+% absorber_thickness = .5; % m
+% insulation_thickness = 1; % m
+% h_length = 6; % m
+% h_width = 2; % m
+% h_height = 3; % m
+% g_height = 2; % m
+% num_days = 40; % days
+
 tspan = [0 86400*num_days]; % s
 
-% house dimension parameters
-h_length = 6; % m
-h_width = 2; % m
-h_height = 3; % m
-
-g_height = 2; % m
 g_area = h_length * g_height; % m ^ 2
 % g_thick = 0.005; % m
 
@@ -57,10 +97,7 @@ wa_thick = insulation_thickness; % m
 f_area = h_width * h_length; % m ^ 2
 f_thick = absorber_thickness; % m
 
-ins_net_area = bwa_area + 2 * swa_area + r_area + f_area;
-
-% house material properties
-f_density = 0; % kg / m ^ 2
+ins_net_area = bwa_area + 2 * swa_area + r_area + f_area; % m ^ 2
 
 % material thermal properties
 h_glass = .7; % W/m^2-K
@@ -77,9 +114,8 @@ c_air = 1012; %J/kg-K
 v_abs = f_area * f_thick; % m^3
 d_abs = 3000; % kg/m^3
 m_abs = d_abs * v_abs; % kg
-c_abs = 800; % J/kg-K
 
-C_abs = 800 * m_abs % J/K
+C_abs = 800 * m_abs; % J/K
 C_a = c_air * m_air; % J/K
 
 % partial resistances
@@ -105,32 +141,6 @@ f = @(t,T) [(1/C_abs)*(g_area*(-361*cos(pi*t/43200) + 224*cos(pi*t/21600) + 210)
 
 [t,dT] = ode45(f, tspan, [0 0]); % compute the ode
 
-M = movmean(dT,3600*4); % 4 hour moving average
+M = movmean(dT,3600*[2 0]); % 2 hour moving average
 
-% Plot temperature over time with optimized values
-f1 = figure(1);
-hold on;
-grid on;
-plot(t,dT,'-')
-plot(t,M, '-')
-h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T_{floor}}$", "$\overline{T_{air}}$");
-set(h,'interpreter','Latex','FontSize',12)
-title("Temperatures in House & 4 hr Moving Average");
-xlabel("Time (seconds)");
-ylabel("Temperature (Celsius)");
-hold off
-
-% Plot temperature over time with optimized values over a single day
-f2 = figure(2);
-hold on;
-grid on;
-plot(t,dT,'-')
-plot(t,M, '-')
-h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T_{floor}}$", "$\overline{T_{air}}$");
-set(h,'interpreter','Latex','FontSize',12);
-title("Temperatures in House & 4 hr Moving Average, Single Day");
-xlabel("Time (seconds)");
-ylabel("Temperature (Celsius)");
-x_start = 993000;
-axis([x_start x_start+86400 0 40])
-hold off
+end
