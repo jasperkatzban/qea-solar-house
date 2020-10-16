@@ -1,4 +1,8 @@
 % todo:
+
+% fix bug where thicker walls makes house colder??
+
+
 % How does the storage unit thickness affect the house’s thermal behavior?
 % 
 % The thickness of the storage unit affects the temperature range
@@ -31,14 +35,13 @@ clc, clear; % clean slate
 
 
 % Plot temperature over time with optimized values
-[t, dT, M] = housetemps(0.5, .2, 6, 2, 3, 2, 40);
+[t, dT, M] = housetemps(0.5, .1, 6, 2, 3, 2, 40);
 fig1 = figure(1);
 hold on;
 grid on;
 plot(t,dT,'-')
-
-plot(t,M, '-')
-h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T_{floor}}$", "$\overline{T_{air}}$");
+plot(t,M, '--')
+h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T}_{floor}$", "$\overline{T}_{air}$");
 set(h,'interpreter','Latex','FontSize',12)
 title("Temperatures in House & 4 hr Moving Average");
 xlabel("Time (seconds)");
@@ -50,8 +53,8 @@ fig2 = figure(2);
 hold on;
 grid on;
 plot(t,dT,'-')
-plot(t,M, '.')
-h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T_{floor}}$", "$\overline{T_{air}}$");
+plot(t,M, '-.')
+h = legend("$T_{floor}$", "$T_{air}$", "$\overline{T}_{floor}$", "$\overline{T}_{air}$");
 set(h,'interpreter','Latex','FontSize',12);
 title("Temperatures in House & 4 hr Moving Average, Single Day");
 xlabel("Time (seconds)");
@@ -60,13 +63,25 @@ x_start = 993000;
 axis([x_start x_start+86400 0 40])
 hold off;
 
-% % make fancy 3d plot
-% figure(3);
-% hold on;
-% absorb_thick_range = linspace(0.1, 1, 100); % thickness of thermal mass/absorber
-% insul_thick_range = linspace(0.2, 1.5, 100); % thickness of wall insulation
-% z = absorb_thick_range * insul_thick_range;
-% contour(z);
+% make fancy 3d plot
+figure(3);
+hold on;
+grid on;
+absorb_thick_range = linspace(0.1, 1, 50); % thickness of thermal mass/absorber
+insul_thick_range = linspace(0.2, 1.5, 50); % thickness of wall insulation
+heats = zeros(50, 50);
+for a = 1:50
+    for i = 1:50
+        [t, dT, M] = housetemps(absorb_thick_range(a), insul_thick_range(i), 6, 2, 3, 2, 30);
+        heats(a, i) = M(end);
+    end
+    a
+end
+contour(absorb_thick_range, insul_thick_range, heats, 'ShowText', 'On')
+title('Sweeping absorber and insulator thickness values')
+xlabel('Absorber thickness (m)'), ylabel('Wall insulator thickness (m)')
+legend('Degrees celsius')
+hold off;
 
 function [t, dT, M] = housetemps(absorber_thickness, insulation_thickness, ...
                               h_length, h_width, h_height, g_height, ...
