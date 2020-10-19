@@ -96,7 +96,7 @@ figure(4);
 hold on;
 grid on;
 house_length_range = linspace(6, 12, 50); % length of house
-window_height_range = linspace(1, 3, 50); % thickness of wall insulation
+window_height_range = linspace(1, 3, 50); % height of window
 heats = zeros(50, 50);
 for h = 1:50
     for w = 1:50
@@ -150,7 +150,7 @@ h_glass = .7; % W/m^2-K
 h_in = 15; % W/m^2-K
 h_out = 30; % W/m^2-K
 
-k_wall = .4; % W/m-K
+k_wall = .6; % W/m-K % k of concrete
 
 v_air = swa_area * h_width; % m^3
 d_air = 1.225; %kg/m^3
@@ -158,7 +158,7 @@ m_air = d_air * v_air; %kg
 c_air = 1012; %J/kg-K
 
 v_abs = f_area * f_thick; % m^3
-d_abs = 3000; % kg/m^3
+d_abs = 3000; % kg/m^3 
 m_abs = d_abs * v_abs; % kg
 
 C_abs = 800 * m_abs; % J/K
