@@ -34,6 +34,8 @@
 clc, clear; % clean slate
 
 
+%% 
+
 % Plot temperature over time with optimized values
 [t, dT, M] = housetemps(0.5, .1, 6, 2, 3, 2, 40);
 fig1 = figure(1);
@@ -47,6 +49,8 @@ title("Temperatures in House & 4 hr Moving Average");
 xlabel("Time (seconds)");
 ylabel("Temperature (Celsius)");
 hold off
+
+%% 
 
 % Plot temperature over time with optimized values over a single day
 fig2 = figure(2);
@@ -62,6 +66,8 @@ ylabel("Temperature (Celsius)");
 x_start = 993000;
 axis([x_start x_start+86400 0 40])
 hold off;
+
+%% 
 
 % make fancy 3d plot
 figure(3);
@@ -82,6 +88,31 @@ title('Sweeping absorber and insulator thickness values')
 xlabel('Absorber thickness (m)'), ylabel('Wall insulator thickness (m)')
 legend('Degrees celsius')
 hold off;
+
+%% 
+
+% make fancy 3d plot
+figure(4);
+hold on;
+grid on;
+house_length_range = linspace(6, 12, 50); % length of house
+window_height_range = linspace(1, 3, 50); % thickness of wall insulation
+heats = zeros(50, 50);
+for h = 1:50
+    for w = 1:50
+        [t, dT, M] = housetemps(.5, .2, house_length_range(h), 2, 3, window_height_range(w), 30);
+        heats(h, w) = M(end);
+    end
+    h
+end
+contour(house_length_range, window_height_range, heats, 20, 'ShowText', 'On')
+title('Sweeping house dimension values')
+xlabel('House length (m)'), ylabel('Window height (m)')
+legend('Degrees celsius')
+hold off;
+
+%% 
+
 
 function [t, dT, M] = housetemps(absorber_thickness, insulation_thickness, ...
                               h_length, h_width, h_height, g_height, ...
