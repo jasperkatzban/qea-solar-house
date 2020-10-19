@@ -37,7 +37,7 @@ clc, clear; % clean slate
 %% 
 
 % Plot temperature over time with optimized values
-[t, dT, M] = housetemps(0.5, .1, 6, 2, 3, 2, 40);
+[t, dT, M] = housetemps(0.8, .3, 6, 2, 3, 2, 30);
 fig1 = figure(1);
 hold on;
 grid on;
@@ -63,8 +63,8 @@ set(h,'interpreter','Latex','FontSize',12);
 title("Temperatures in House & 4 hr Moving Average, Single Day");
 xlabel("Time (seconds)");
 ylabel("Temperature (Celsius)");
-x_start = 993000;
-axis([x_start x_start+86400 0 40])
+x_start = 1425000;
+axis([x_start x_start+86400 0 60])
 hold off;
 
 %% 
@@ -73,12 +73,12 @@ hold off;
 figure(3);
 hold on;
 grid on;
-absorb_thick_range = linspace(0.1, 1, 50); % thickness of thermal mass/absorber
-insul_thick_range = linspace(0.2, 1.5, 50); % thickness of wall insulation
+absorb_thick_range = linspace(0, 2, 50); % thickness of thermal mass/absorber
+insul_thick_range = linspace(0, 1.5, 50); % thickness of wall insulation
 heats = zeros(50, 50);
 for a = 1:50
     for i = 1:50
-        [t, dT, M] = housetemps(absorb_thick_range(a), insul_thick_range(i), 6, 2, 3, 2, 30);
+        [t, dT, M] = housetemps(absorb_thick_range(a), insul_thick_range(i), 6, 2, 3, 2, 15);
         heats(a, i) = M(end);
     end
     a
@@ -96,16 +96,16 @@ figure(4);
 hold on;
 grid on;
 house_length_range = linspace(6, 12, 50); % length of house
-window_height_range = linspace(1, 3, 50); % height of window
+window_height_range = linspace(0.5, 3, 50); % height of window
 heats = zeros(50, 50);
 for h = 1:50
     for w = 1:50
-        [t, dT, M] = housetemps(.5, .2, house_length_range(h), 2, 3, window_height_range(w), 30);
+        [t, dT, M] = housetemps(.8, .3, house_length_range(h), 2, 3, window_height_range(w), 15);
         heats(h, w) = M(end);
     end
     h
 end
-contour(house_length_range, window_height_range, heats, 20, 'ShowText', 'On')
+contour(house_length_range, window_height_range, heats, 'ShowText', 'On')
 title('Sweeping house dimension values')
 xlabel('House length (m)'), ylabel('Window height (m)')
 legend('Degrees celsius')
@@ -125,7 +125,7 @@ function [t, dT, M] = housetemps(absorber_thickness, insulation_thickness, ...
 % h_width = 2; % m
 % h_height = 3; % m
 % g_height = 2; % m
-% num_days = 40; % days
+% num_days = 15; % days
 
 tspan = [0 86400*num_days]; % s
 
